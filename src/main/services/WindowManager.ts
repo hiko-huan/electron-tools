@@ -2,15 +2,20 @@ import { app, BrowserWindow, dialog } from 'electron'
 
 import config from '../../../config/index'
 import { winURL } from '../config/static'
-import IPCMainService from './IpcMain'
+import { IpcMainService } from '@main/services/IpcMain'
 
 class MainInit {
   public winURL: string = ''
   public mainWindow: BrowserWindow = null
+  protected _ipcMainService: IpcMainService
 
   constructor() {
     this.winURL = winURL
-    IPCMainService.init()
+    this.init()
+    this._ipcMainService.initialize()
+  }
+  public init () {
+    this._ipcMainService = new IpcMainService()
   }
   // Main window function
   createMainWindow() {
