@@ -1,23 +1,29 @@
-import { APIKEY_CAPTCHA, ERROR_CAPTCHA, REQUEST_API, RESPONSE_API } from '@main/config'
-import fetch, { RequestInit } from 'electron-fetch'
-import { delay } from '@main/helpers'
-
-const FormData = require('form-data')
+import { APIKEY_CAPTCHA, ERROR_CAPTCHA, REQUEST_API, RESPONSE_API } from '../../../../common/config'
+import { delay } from '../../helpers'
+import fetch, { Response } from 'electron-fetch'
+// const axios = require('axios')
 
 export class AzCaptchaService {
-  async createTaskCaptcha(imageBase64: string) {
-    const formData = new FormData();
-    formData.append('key', APIKEY_CAPTCHA);
-    formData.append('method', 'base64');
-    formData.append('json', '1');
-    formData.append('body', imageBase64);
-
-    const requestOption: RequestInit = {
+  public async createTaskCaptcha(imageBase64: string) {
+    const data = {
+      key: APIKEY_CAPTCHA,
+      method: 'base64',
+      json: '1',
+      body: imageBase64
+    }
+    const body = new URLSearchParams(data)
+    const requestOption = {
       method: 'POST',
-      body: formData,
-      headers: formData.getHeaders()
+      body,
+      headers : {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      }
     };
-    const response = await fetch(REQUEST_API, requestOption);
+    // @ts-ignore
+    const response: Response = await fetch(REQUEST_API, requestOption);
+    // const a = await axios.post(REQUEST_API, requestOption)
+    // console.log('a', a)
     const responseJson = await response.json();
     if (response.ok && responseJson.status === 1) {
       return responseJson.request;
@@ -25,7 +31,7 @@ export class AzCaptchaService {
     throw new Error(responseJson.request || 'Unknown error');
   }
 
-  async getTaskCaptcha(id: number) {
+  public async getTaskCaptcha(id: number) {
     const fullUrl = `${RESPONSE_API}?key=${APIKEY_CAPTCHA}&json=1&action=get&id=${id}`;
     const response = await fetch(fullUrl);
     const responseJson = await response.json();
@@ -38,7 +44,7 @@ export class AzCaptchaService {
     throw new Error(responseJson.request || 'Unknown error');
   }
 
-  async pollTaskResult(id: number, time = 1500, attempts = 10) {
+  public async pollTaskResult(id: number, time = 1500, attempts = 10) {
     try {
       await delay(time);
       for (let i = 0; i < attempts; i++) {
@@ -53,17 +59,13 @@ export class AzCaptchaService {
     }
   }
 
-  async getResultCaptcha(imageBase64: string) {
+  public async getResultCaptcha(imageBase64: string) {
     try {
       const id = await this.createTaskCaptcha(imageBase64);
       const result = await this.pollTaskResult(id);
-      return result ?? '';
+      return result ? result : '';
     } catch (error) {
       console.error(error.message);
     }
-  }
-
-  isImageLoaded(imgElement: HTMLImageElement): boolean {
-    return imgElement.complete && imgElement.naturalHeight !== 0;
   }
 }

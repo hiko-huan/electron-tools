@@ -15,3 +15,7 @@ export async function waitingNext(timeCheck = 1000, end): Promise<any> {
   }
   await waitingNext(timeCheck, end);
 }
+
+export const isImageLoaded = (imgElement: HTMLImageElement): boolean => {
+  return imgElement.complete && imgElement.naturalHeight !== 0;
+}

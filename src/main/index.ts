@@ -1,8 +1,8 @@
 import { app } from 'electron'
-import InitWindow from './services/WindowManager'
+import { MainInit } from './services/WindowManager'
 
 function onAppReady() {
-  new InitWindow().initWindow()
+  new MainInit().initWindow()
 }
 
 app.isReady() ? onAppReady() : app.on('ready', onAppReady)

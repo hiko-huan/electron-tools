@@ -5,12 +5,12 @@
   "version": "1.0.0",
   "main": "./dist/electron/main/main.js",
   "scripts": {
-    "dev": "ts-node .runtime/runner.ts",
-    "build": "cross-env BUILD_TARGET=clean ts-node .runtime/builder.ts && ts-node .runtime/builder.ts && electron-builder",
-    "build:win64": "cross-env BUILD_TARGET=clean ts-node .runtime/builder.ts && ts-node .runtime/builder.ts && electron-builder --win  --x64",
-    "build:mac": "cross-env BUILD_TARGET=clean ts-node .runtime/builder.ts && ts-node .runtime/builder.ts && electron-builder --mac",
-    "build:dir": "cross-env BUILD_TARGET=clean ts-node .runtime/builder.ts && ts-node .runtime/builder.ts && electron-builder --dir",
-    "build:clean": "cross-env BUILD_TARGET=clean ts-node .runtime/builder.ts"
+    "dev": "node .runtime/runner.js",
+    "build": "cross-env BUILD_TARGET=clean node .runtime/builder.js && node .runtime/builder.js && electron-builder -c build.json",
+    "build:win64": "cross-env BUILD_TARGET=clean node .runtime/builder.js && node .runtime/builder.js && electron-builder --win -c build.json  --x64",
+    "build:mac": "cross-env BUILD_TARGET=clean node .runtime/builder.js && node .runtime/builder.js && electron-builder -c build.json --mac",
+    "build:dir": "cross-env BUILD_TARGET=clean node .runtime/builder.js && node .runtime/builder.js && electron-builder --dir",
+    "build:clean": "cross-env BUILD_TARGET=clean node .runtime/builder.js"
   },
   "devDependencies": {
     "@rollup/plugin-alias": "^3.1.4",
@@ -28,63 +28,23 @@
     "electron-builder": "^22.11.7",
     "electron-devtools-installer": "^3.2.0",
     "electron-fetch": "^1.7.4",
-    "form-data": "^4.0.0",
+    "javascript-obfuscator": "^3.0.0",
     "multispinner": "^0.2.1",
     "portfinder": "^1.0.28",
     "rollup": "^2.53.3",
     "rollup-plugin-esbuild": "^4.5.0",
+    "rollup-plugin-obfuscator": "^0.2.1",
     "rollup-plugin-typescript2": "^0.30.0",
+    "sass": "^1.45.1",
     "ts-node": "^10.1.0",
     "typescript": "^4.3.5",
     "vite": "^2.4.3",
     "vue": "^3.1.5",
-    "vue-router": "4"
-  },
-  "build": {
-    "asar": true,
-    "extraFiles": [],
-    "publish": [
-      {
-        "provider": "generic",
-        "url": "http://127.0.0.1"
-      }
-    ],
-    "productName": "Tools Auto",
-    "appId": "org.tools.electron",
-    "directories": {
-      "output": "build"
-    },
-    "files": [
-      "dist/electron/**/*"
-    ],
-    "dmg": {
-      "contents": [
-        {
-          "x": 410,
-          "y": 150,
-          "type": "link",
-          "path": "/Applications"
-        },
-        {
-          "x": 130,
-          "y": 150,
-          "type": "file"
-        }
-      ]
-    },
-    "mac": {
-      "icon": "build/icons/icon.icns"
-    },
-    "win": {
-      "icon": "build/icons/icon.ico",
-      "target": "nsis"
-    },
-    "linux": {
-      "target": "deb",
-      "icon": "build/icons"
-    }
+    "vue-router": "4",
+    "element-plus": "^1.1.0-beta.19"
   },
   "dependencies": {
+    "axios": "^0.24.0",
     "bufferutil": "^4.0.5",
     "puppeteer": "^13.0.1",
     "puppeteer-core": "^13.0.1",

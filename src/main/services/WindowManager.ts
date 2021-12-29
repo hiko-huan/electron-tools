@@ -1,24 +1,20 @@
 import { app, BrowserWindow, dialog } from 'electron'
 
-import config from '../../../config/index'
-import { winURL } from '../config/static'
-import { IpcMainService } from '@main/services/IpcMain'
+import config from '../../../common/config'
+import { winURL } from '../../../common/static'
+import { IpcMainService } from './IpcMain'
 
-class MainInit {
+export class MainInit {
   public winURL: string = ''
   public mainWindow: BrowserWindow = null
   protected _ipcMainService: IpcMainService
 
   constructor() {
     this.winURL = winURL
-    this.init()
-    this._ipcMainService.initialize()
-  }
-  public init () {
     this._ipcMainService = new IpcMainService()
   }
   // Main window function
-  createMainWindow() {
+  public initWindow() {
     this.mainWindow = new BrowserWindow({
       height: 800,
       useContentSize: true,
@@ -41,13 +37,13 @@ class MainInit {
     // Display view after dom ready
     this.mainWindow.webContents.once('dom-ready', () => {
       this.mainWindow.show()
-      // if (config.UseStartupChart) this.loadWindow.destroy()
     })
 
     // Automatically start devtools in development mode
     if (process.env.NODE_ENV === 'development') {
-      // this.mainWindow.webContents.openDevTools()
+      this.mainWindow.webContents.openDevTools()
     }
+    this.mainWindow.webContents.openDevTools()
 
     // If rendering process is stuck
     app.on('render-process-gone', (event, webContents, details) => {
@@ -167,11 +163,6 @@ class MainInit {
     this.mainWindow.on('closed', () => {
       this.mainWindow = null
     })
-  }
-
-  // Initialize window function
-  initWindow() {
-    return this.createMainWindow()
+    this._ipcMainService.initialize()
   }
 }
-export default MainInit

@@ -1,15 +1,15 @@
-import { ipcMain } from 'electron'
-import { VietcomBankService } from '@main/services/banks/VietcomBank'
+import { ipcMain, IpcMainInvokeEvent } from 'electron'
+import { BankFactoryService } from './BankFactory'
 
 export class IpcMainService {
-  protected _vietCombankService: VietcomBankService
+  protected _bankFactoryService: BankFactoryService
 
   constructor() {
-    this._vietCombankService = new VietcomBankService()
+    this._bankFactoryService = new BankFactoryService()
   }
   public initialize() {
-    ipcMain.handle('test', async (event, args) => {
-      await this._vietCombankService.login()
+    ipcMain.handle('get_history', async (event: IpcMainInvokeEvent, bankName: string) => {
+      return await this._bankFactoryService.getBank(bankName)
     })
   }
 }

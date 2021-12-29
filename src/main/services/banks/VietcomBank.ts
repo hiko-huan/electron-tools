@@ -1,14 +1,17 @@
-import { AzCaptchaService } from '@main/services/captcha/AzCaptcha'
-import { delay, waitingNext } from '@main/helpers'
-
+import { AzCaptchaService } from '../captcha/AzCaptcha'
+import { delay, waitingNext, isImageLoaded } from '../../helpers'
+import Bank from './Bank'
 const puppeteer = require('puppeteer')
 
-export class VietcomBankService {
+export class VietcomBankService extends Bank {
   protected _azCaptchaService: AzCaptchaService
   constructor() {
+    super()
     this._azCaptchaService = new AzCaptchaService()
   }
-
+  public async initialize (): Promise<void> {
+    await this.login()
+  }
   public async login() {
     const browser = await puppeteer.launch({
       headless: false
@@ -38,7 +41,7 @@ export class VietcomBankService {
     while (invalidCaptcha) {
       await waitingNext(500, async () => {
         imageCaptcha = await page.$('.captcha .input-group-slot-inner img')
-        return this._azCaptchaService.isImageLoaded(imageCaptcha)
+        return isImageLoaded(imageCaptcha)
       });
       const imageBase64 = await page.evaluate(function() {
         const img = document.querySelector<HTMLImageElement>('.captcha .input-group-slot-inner img')
@@ -72,7 +75,7 @@ export class VietcomBankService {
         invalidCaptcha = false
       }
     }
-    await page.waitForNavigation({waitUntil: 'domcontentloaded'})
+    await page.waitForNavigation({waitUntil: 'load'})
     await page.click(".list-link-item.has-link-arrow.tk")
     // await page.waitForNavigation({waitUntil: 'networkidle2'})
     // await page.waitForSelector('.list-link-item.has-link-arrow.tk')
